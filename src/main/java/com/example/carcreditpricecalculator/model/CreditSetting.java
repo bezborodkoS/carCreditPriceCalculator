@@ -2,11 +2,11 @@ package com.example.carcreditpricecalculator.model;
 
 import jakarta.persistence.*;
 
-@Table(name = "time")
+@Table(name = "creditSetting")
 @Entity
 public class CreditSetting {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private Integer month;
@@ -14,6 +14,14 @@ public class CreditSetting {
     private Integer percentDeposit;
 
     private Double percent;
+
+    @ManyToOne
+    @JoinColumn(name = "bank_id")
+    private Bank bank;
+
+    @ManyToOne
+    @JoinColumn(name = "carDealer_id")
+    private CarDealer carDealer;
 
 //    @OneToMany(mappedBy = "time")
 //    private Set<PercentDeposit> percentDeposit;
@@ -46,6 +54,23 @@ public class CreditSetting {
 
     public void setPercent(Double percent) {
         this.percent = percent;
+    }
+
+
+    public Bank getBank() {
+        return bank;
+    }
+
+    public void setBank(Bank bank) {
+        this.bank = bank;
+    }
+
+    public CarDealer getCarDealer() {
+        return carDealer;
+    }
+
+    public void setCarDealer(CarDealer carDealer) {
+        this.carDealer = carDealer;
     }
 
     @Override

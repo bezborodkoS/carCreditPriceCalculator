@@ -21,29 +21,8 @@ public class CalculatorService {
     public CalculatorService(CreditSettingRepository creditSettingRepository) {
         this.creditSettingRepository = creditSettingRepository;
     }
-//    private final PercentRepository percentRepository;
-//    private final PercentDepositRepository percentDepositRepository;
-
-//    public CalculatorService(PercentDepositRepository percentDepositRepository, PercentRepository percentRepository, TimeRepository timeRepository) {
-//        this.percentDepositRepository = percentDepositRepository;
-//        this.percentRepository = percentRepository;
-//        this.timeRepository = timeRepository;
-//    }
 
 
-    public boolean addSettingsPercent(Integer month, Integer percentDeposit, Double percent) {
-        CreditSetting creditSetting;
-        if (creditSettingRepository.findTimeByMonthAndPercentDeposit(month, percentDeposit) == null) {
-            creditSetting = new CreditSetting();
-            creditSetting.setMonth(month);
-            creditSetting.setPercentDeposit(percentDeposit);
-            creditSetting.setPercent(percent);
-            creditSettingRepository.save(creditSetting);
-            return true;
-        }
-
-        return false;
-    }
 
 
 //    start:  /buyCar
