@@ -2,11 +2,9 @@ package com.example.carcreditpricecalculator.model;
 
 import jakarta.persistence.*;
 
-import java.util.Set;
-
 @Table(name = "time")
 @Entity
-public class Time {
+public class CreditSetting {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -48,5 +46,15 @@ public class Time {
 
     public void setPercent(Double percent) {
         this.percent = percent;
+    }
+
+    @Override
+    public String toString() {
+        return "CreditSetting{" +
+                "id=" + id +
+                ", month=" + month +
+                ", percentDeposit=" + percentDeposit +
+                ", percent=" + percent +
+                '}';
     }
 }

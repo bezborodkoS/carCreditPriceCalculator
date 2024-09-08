@@ -1,10 +1,9 @@
-package com.example.carcreditpricecalculator.model.transformation;
+package com.example.carcreditpricecalculator.model.dto;
 
 
+import com.example.carcreditpricecalculator.model.CreditSetting;
 
-import java.util.Map;
-
-public class TransformationToObj {
+public class CreditSettingDTO {
 
 
 
@@ -14,12 +13,26 @@ public class TransformationToObj {
 
     private double monthlyPayment;
 
-    public TransformationToObj(int countMonthInYear, int percentDeposit, double percent, double monthlyPayment) {
-        this.countMonthInYear = countMonthInYear;
-        this.percentDeposit = percentDeposit;
-        this.percent = percent;
-        this.monthlyPayment = monthlyPayment;
+    public CreditSettingDTO() {
     }
+
+    public CreditSettingDTO convertCreditSettingToDTO(CreditSetting creditSetting){
+        System.out.println("come to convert");
+        CreditSettingDTO creditSettingDTO = new CreditSettingDTO();
+        creditSettingDTO.setCountMonthInYear(creditSetting.getMonth());
+        creditSettingDTO.setPercentDeposit(creditSetting.getPercentDeposit());
+        creditSettingDTO.setPercent(creditSetting.getPercent());
+        return creditSettingDTO;
+    }
+
+    public CreditSetting convertDTOToCreditSetting(CreditSettingDTO creditSettingDTO){
+        CreditSetting creditSetting = new CreditSetting();
+        creditSetting.setMonth(creditSettingDTO.getCountMonthInYear());
+        creditSetting.setPercentDeposit(creditSettingDTO.getPercentDeposit());
+        creditSetting.setPercent(creditSettingDTO.getPercent());
+        return creditSetting;
+    }
+
 
     public double getMonthlyPayment() {
         return monthlyPayment;
@@ -35,6 +48,22 @@ public class TransformationToObj {
 
     public double getPercent() {
         return percent;
+    }
+
+    public void setCountMonthInYear(int countMonthInYear) {
+        this.countMonthInYear = countMonthInYear;
+    }
+
+    public void setPercentDeposit(int percentDeposit) {
+        this.percentDeposit = percentDeposit;
+    }
+
+    public void setPercent(double percent) {
+        this.percent = percent;
+    }
+
+    public void setMonthlyPayment(double monthlyPayment) {
+        this.monthlyPayment = monthlyPayment;
     }
 
     @Override

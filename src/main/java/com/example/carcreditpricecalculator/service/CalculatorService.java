@@ -6,22 +6,20 @@ package com.example.carcreditpricecalculator.service;
 //import com.example.carcreditpricecalculator.repository.PercentDepositRepository;
 //import com.example.carcreditpricecalculator.repository.PercentRepository;
 
-import com.example.carcreditpricecalculator.model.Time;
-import com.example.carcreditpricecalculator.model.transformation.TransformationToObj;
-import com.example.carcreditpricecalculator.repository.TimeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.carcreditpricecalculator.model.CreditSetting;
+import com.example.carcreditpricecalculator.model.dto.CreditSettingDTO;
+import com.example.carcreditpricecalculator.repository.CreditSettingRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class CalculatorService {
-    private final TimeRepository timeRepository;
+    private final CreditSettingRepository creditSettingRepository;
 
-    public CalculatorService(TimeRepository timeRepository) {
-        this.timeRepository = timeRepository;
+    public CalculatorService(CreditSettingRepository creditSettingRepository) {
+        this.creditSettingRepository = creditSettingRepository;
     }
 //    private final PercentRepository percentRepository;
 //    private final PercentDepositRepository percentDepositRepository;
@@ -34,124 +32,110 @@ public class CalculatorService {
 
 
     public boolean addSettingsPercent(Integer month, Integer percentDeposit, Double percent) {
-        Time time;
-        if (timeRepository.findTimeByMonthAndPercentDeposit(month, percentDeposit) == null) {
-            time = new Time();
-            time.setMonth(month);
-            time.setPercentDeposit(percentDeposit);
-            time.setPercent(percent);
-            timeRepository.save(time);
+        CreditSetting creditSetting;
+        if (creditSettingRepository.findTimeByMonthAndPercentDeposit(month, percentDeposit) == null) {
+            creditSetting = new CreditSetting();
+            creditSetting.setMonth(month);
+            creditSetting.setPercentDeposit(percentDeposit);
+            creditSetting.setPercent(percent);
+            creditSettingRepository.save(creditSetting);
             return true;
         }
 
-//        Time time;
-//        PercentDeposit percentDepositNew;
-//        Percent percentNew;
-//        if (!findSettingInDb(month, percentDeposit, percent)) {
-//            time = new Time();
-//            time.setMonth(month);
-//            timeRepository.save(time);
-//            percentDepositNew = new PercentDeposit();
-//            percentDepositNew.setPercentDeposit(percentDeposit);
-//            percentDepositNew.setTime(time);
-//            percentDepositRepository.save(percentDepositNew);
-//            percentNew = new Percent();
-//            percentNew.setPercent(percent);
-//            percentNew.setPercentDeposit(percentDepositNew);
-//
-//            percentRepository.save(percentNew);
-//            return true;
-//        } else if (findMonthInDB(month)) {
-//            time = timeRepository.findTimeByMonth(month);
-////            if (findPercentDepositInDB(percentDeposit)){
-////                percentDepositNew= percentDepositRepository.findPercentDepositByPercentDeposit(percentDeposit);
-////            }else {
-//                percentDepositNew = new PercentDeposit();
-//                percentDepositNew.setPercentDeposit(percentDeposit);
-////            }
-//            percentDepositNew.setTime(time);
-//            percentDepositRepository.save(percentDepositNew);
-//            percentNew = new Percent();
-//            percentNew.setPercent(percent);
-//            percentNew.setPercentDeposit(percentDepositNew);
-//            percentRepository.save(percentNew);
-//            return true;
-//        }
-//
-//        System.out.println(false);
-//        return false;
-//        }
-        canBuyCar(1000000.0, 590000.0);
         return false;
     }
 
-//    public boolean findSettingInDb(Integer month, Integer percentDeposit, Double percent) {
-//        if (findMonthInDB(month) && findPercentDepositInDB(percentDeposit) && findPercentInDB(percent)){
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//    private boolean findMonthInDB(Integer month) {
-//        if (timeRepository.findTimeByMonth(month)!=null) {
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//    private boolean findPercentDepositInDB(Integer percentDeposit) {
-//        if (timeRepository.findTimeByMonth(percentDeposit)!=null) {
-//            return true;
-//        }
-//        return false;
-//    }
 
-//    private boolean findPercentInDB(Double percent) {
-//        if (percentRepository.findPercentByPercent(percent)!=null) {
-//            return true;
-//        }
-//        return false;
-//    }
-
-
-    public ArrayList<String> canBuyCar(Double costCar, Double deposit) {
+//    start:  /buyCar
+    //  покупка автомобиля с месячным платежом пользователя который он может себе позволить
+    public ArrayList<String> canBuyCar(Double costCar, Double deposit, Double wantPayInMonth) {
         Integer calculateDepositPercent = (int) (deposit / (costCar / 100));
-        calculateDepositPercent=foundPercentDepositFromCostCar(calculateDepositPercent);
-        System.out.println("car " +calculateDepositPercent);
-        ArrayList<String> transformationToObjArrayList = returnAllPurchaseOptionsCar(costCar, deposit, calculateDepositPercent);
-        for (String s :transformationToObjArrayList) {
+        calculateDepositPercent = foundPercentDepositFromCostCar(calculateDepositPercent);
+        System.out.println("car " + calculateDepositPercent);
+        ArrayList<String> transformationToObjArrayList = returnAllPurchaseOptionsCarWithWantPayInMonth(costCar, deposit, calculateDepositPercent, wantPayInMonth);
+        for (String s : transformationToObjArrayList) {
             System.out.println(s);
         }
         return transformationToObjArrayList;
     }
 
-    private ArrayList<String> returnAllPurchaseOptionsCar(Double costCar, Double deposit, Integer calculateDepositPercent) {
-        List<Time> foundAllVersionsWhizSpecificsPercentDeposit = timeRepository.findAllByPercentDeposit(calculateDepositPercent);
+    //    вернуть список всех возможных вариантов кредита с месячным платежом пользователя который он может себе позволить
+    private ArrayList<String> returnAllPurchaseOptionsCarWithWantPayInMonth(Double costCar, Double deposit, Integer calculateDepositPercent, Double wantPayInMonth) {
+        List<CreditSetting> foundAllVersionsWhizSpecificsPercentDeposit = creditSettingRepository.findAllByPercentDeposit(calculateDepositPercent);
         ArrayList<String> transformationToObjArrayList = new ArrayList<>();
-        for (Time t : foundAllVersionsWhizSpecificsPercentDeposit) {
-            double costCarAfterPayDeposit = costCar - deposit;
-            double monthlyPayment = (costCarAfterPayDeposit+(costCarAfterPayDeposit/t.getPercent()))/t.getMonth();
-            TransformationToObj transformationToObj = new TransformationToObj(t.getMonth(),t.getPercentDeposit(),t.getPercent(),monthlyPayment);
-            transformationToObjArrayList.add(transformationToObj.toString());
+        for (CreditSetting t : foundAllVersionsWhizSpecificsPercentDeposit) {
+            double costCarAfterPayDeposit = calculateCostCarAfterPayDeposit(costCar, deposit);
+            double monthlyPayment = calculateMonthlyPayment(t, costCarAfterPayDeposit);
+            if (wantPayInMonth >= monthlyPayment) {
+                System.out.println(t.toString());
+                CreditSettingDTO creditSettingDTO = new CreditSettingDTO().convertCreditSettingToDTO(t);
+                creditSettingDTO.setMonthlyPayment(monthlyPayment);
+                System.out.println(creditSettingDTO.toString() + "//////////");
+                transformationToObjArrayList.add(creditSettingDTO.toString());
+            }
+        }
+        return transformationToObjArrayList;
+    }
+//    end:   /buyCar
+
+
+
+//    start:    /morePayInMonth
+//    все варианты машины с возможными кредитами
+    public ArrayList<String> allOptionsWithThisCar(Double costCar, Double deposit) {
+        Integer calculateDepositPercent = (int) (deposit / (costCar / 100));
+        calculateDepositPercent = foundPercentDepositFromCostCar(calculateDepositPercent);
+        System.out.println("car " + calculateDepositPercent);
+        ArrayList<String> transformationToObjArrayList = returnAllPurchaseOptionsCar(costCar, deposit, calculateDepositPercent);
+        for (String s : transformationToObjArrayList) {
+            System.out.println(s);
         }
         return transformationToObjArrayList;
     }
 
+    //    все варианты покупки машины в кредит
+    private ArrayList<String> returnAllPurchaseOptionsCar(Double costCar, Double deposit, Integer calculateDepositPercent) {
+        List<CreditSetting> foundAllVersionsWhizSpecificsPercentDeposit = creditSettingRepository.findAllByPercentDeposit(calculateDepositPercent);
+        ArrayList<String> transformationToObjArrayList = new ArrayList<>();
+        for (CreditSetting t : foundAllVersionsWhizSpecificsPercentDeposit) {
+            double costCarAfterPayDeposit = calculateCostCarAfterPayDeposit(costCar, deposit);
+            double monthlyPayment = calculateMonthlyPayment(t, costCarAfterPayDeposit);
+            System.out.println(t.toString());
+            CreditSettingDTO creditSettingDTO = new CreditSettingDTO().convertCreditSettingToDTO(t);
+            creditSettingDTO.setMonthlyPayment(monthlyPayment);
+            transformationToObjArrayList.add(creditSettingDTO.toString());
+        }
+        return transformationToObjArrayList;
+    }
+//    end:    /morePayInMonth
+
+
+    //    найти процент первого взноса от общей стоимости всей машины
     private Integer foundPercentDepositFromCostCar(Integer calculateDepositPercent) {
-        List<Time> timeList = timeRepository.findAllByMonth(12);
-        for (Time t : timeList) {
+        List<CreditSetting> creditSettingList = creditSettingRepository.findAllByMonth(12);
+        for (CreditSetting t : creditSettingList) {
             System.out.println(t.getPercentDeposit());
         }
-        for (int i = 0; i < timeList.size(); i++) {
-            if (i!= timeList.size()-1) {
-                if (calculateDepositPercent >= timeList.get(i).getPercentDeposit() && calculateDepositPercent < timeList.get(i + 1).getPercentDeposit()) {
-                    calculateDepositPercent = timeList.get(i).getPercentDeposit();
+        for (int i = 0; i < creditSettingList.size(); i++) {
+            if (i != creditSettingList.size() - 1) {
+                if (calculateDepositPercent >= creditSettingList.get(i).getPercentDeposit() && calculateDepositPercent < creditSettingList.get(i + 1).getPercentDeposit()) {
+                    calculateDepositPercent = creditSettingList.get(i).getPercentDeposit();
                     return calculateDepositPercent;
                 }
-            }else {
-                calculateDepositPercent = timeList.get(i).getPercentDeposit();
+            } else {
+                calculateDepositPercent = creditSettingList.get(i).getPercentDeposit();
             }
         }
         return calculateDepositPercent;
+    }
+
+//    Расчитать месячный платеж
+    private static double calculateMonthlyPayment(CreditSetting t, double costCarAfterPayDeposit) {
+        return (costCarAfterPayDeposit + (costCarAfterPayDeposit / t.getPercent())) / t.getMonth();
+    }
+
+//    расчитать оставшуюся стоимость машины после вычета депозита
+    private static double calculateCostCarAfterPayDeposit(Double costCar, Double deposit) {
+        return costCar - deposit;
     }
 }
