@@ -18,21 +18,20 @@ public class CalculatorController {
     }
 
 
-
     @PostMapping("/buyCar/{nameAutoDealer}/{bank}")
     public ResponseEntity<ArrayList<CreditSettingDTO>> buyCar(@PathVariable("nameAutoDealer") String nameAutoDealer,
                                                               @PathVariable("bank") String nameBank,
                                                               @RequestParam("costCar") Double costCar,
                                                               @RequestParam("deposit") Double deposit,
-                                                              @RequestParam("wantPayInMonth") Double wantPayInMonth){
-        System.out.println(nameAutoDealer+"  "+nameBank+"   controller");
-        return new ResponseEntity<>(calculatorService.canBuyCar(costCar,deposit,wantPayInMonth,nameAutoDealer,nameBank), HttpStatus.OK);
+                                                              @RequestParam("wantPayInMonth") Double wantPayInMonth) {
+        return new ResponseEntity<>(calculatorService.canBuyCar(costCar, deposit, wantPayInMonth, nameAutoDealer, nameBank), HttpStatus.OK);
     }
 
-    @PostMapping("/morePayInMonth")
-    public ResponseEntity<ArrayList<CreditSettingDTO>> mayBeBuyCarButMorePayInMonth(@RequestParam("costCar") Double costCar,
-                                                    @RequestParam("deposit") Double deposit){
-        return new ResponseEntity<>(calculatorService.allOptionsWithThisCar(costCar,deposit), HttpStatus.OK);
+    @PostMapping("/morePayInMonth/{nameAutoDealer}")
+    public ResponseEntity<ArrayList<CreditSettingDTO>> mayBeBuyCarButMorePayInMonth(@PathVariable("nameAutoDealer") String nameAutoDealer,
+                                                                                    @RequestParam("costCar") Double costCar,
+                                                                                    @RequestParam("deposit") Double deposit) {
+        return new ResponseEntity<>(calculatorService.allOptionsWithThisCar(costCar, deposit,nameAutoDealer), HttpStatus.OK);
     }
 
 }

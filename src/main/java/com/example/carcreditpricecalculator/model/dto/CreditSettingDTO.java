@@ -10,8 +10,8 @@ public class CreditSettingDTO {
     private int countMonthInYear;
     private int percentDeposit;
     private  double percent;
-
     private double monthlyPayment;
+    private String nameBank;
 
     public CreditSettingDTO() {
     }
@@ -21,6 +21,8 @@ public class CreditSettingDTO {
         creditSettingDTO.setCountMonthInYear(creditSetting.getMonth());
         creditSettingDTO.setPercentDeposit(creditSetting.getPercentDeposit());
         creditSettingDTO.setPercent(creditSetting.getPercent());
+        creditSettingDTO.setNameBank(creditSetting.getBank().getNameBank());
+
         return creditSettingDTO;
     }
 
@@ -65,6 +67,14 @@ public class CreditSettingDTO {
         this.monthlyPayment = monthlyPayment;
     }
 
+    public String getNameBank() {
+        return nameBank;
+    }
+
+    public void setNameBank(String nameBank) {
+        this.nameBank = nameBank;
+    }
+
     @Override
     public String toString() {
         return "TransformationToObj{" +
@@ -72,8 +82,10 @@ public class CreditSettingDTO {
                 ", Разовая оплата от общей стоимости автомобиля=" + percentDeposit +
                 ", Процентная ставка в месяц=" + percent +
                 ", ежемесячный платеж=" + monthlyPayment +
+                ", банк='" + nameBank +
                 '}';
     }
+
 
     //    public TransformationToObj returnTransformation(Year year, double foundPercentDeposit){
 //        TransformationToObj transformationToObj = new TransformationToObj();

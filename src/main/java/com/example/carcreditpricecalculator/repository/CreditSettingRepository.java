@@ -13,5 +13,6 @@ public interface CreditSettingRepository extends JpaRepository<CreditSetting, In
     CreditSetting findTimeByMonthAndPercentDeposit(Integer month, Integer percentDeposit);
     ArrayList<CreditSetting> findAllByMonth(Integer month);
     ArrayList<CreditSetting> findAllByPercentDeposit(Integer percentDeposit);
+    ArrayList<CreditSetting> findAllByPercentDepositAAndCarDealer_NameCarDealer(Integer percentDeposit,String nameAutoDealer);
     ArrayList<CreditSetting> findAllByPercentDepositAndCarDealer_NameCarDealerAndBank_NameBank(Integer percentDeposit, String nameCarDealer, String nameBank);
 }
