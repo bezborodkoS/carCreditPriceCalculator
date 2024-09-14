@@ -23,66 +23,62 @@ public class CalculatorService {
     }
 
 
-
-
-//    start:  /buyCar
+    //    start:  /buyCar
     //  покупка автомобиля с месячным платежом пользователя который он может себе позволить
-    public ArrayList<String> canBuyCar(Double costCar, Double deposit, Double wantPayInMonth) {
+    public ArrayList<CreditSettingDTO> canBuyCar(Double costCar, Double deposit, Double wantPayInMonth, String nameAutoDealer, String nameBank) {
+        System.out.println("can buy car");
         Integer calculateDepositPercent = (int) (deposit / (costCar / 100));
         calculateDepositPercent = foundPercentDepositFromCostCar(calculateDepositPercent);
         System.out.println("car " + calculateDepositPercent);
-        ArrayList<String> transformationToObjArrayList = returnAllPurchaseOptionsCarWithWantPayInMonth(costCar, deposit, calculateDepositPercent, wantPayInMonth);
-        for (String s : transformationToObjArrayList) {
-            System.out.println(s);
+        ArrayList<CreditSettingDTO> transformationToObjArrayList = returnAllPurchaseOptionsCarWithWantPayInMonth(costCar, deposit, calculateDepositPercent, wantPayInMonth,nameAutoDealer,nameBank);
+        for (CreditSettingDTO c: transformationToObjArrayList) {
+            System.out.println(c.toString()+"  can buy car");
         }
         return transformationToObjArrayList;
     }
 
     //    вернуть список всех возможных вариантов кредита с месячным платежом пользователя который он может себе позволить
-    private ArrayList<String> returnAllPurchaseOptionsCarWithWantPayInMonth(Double costCar, Double deposit, Integer calculateDepositPercent, Double wantPayInMonth) {
-        List<CreditSetting> foundAllVersionsWhizSpecificsPercentDeposit = creditSettingRepository.findAllByPercentDeposit(calculateDepositPercent);
-        ArrayList<String> transformationToObjArrayList = new ArrayList<>();
+    private ArrayList<CreditSettingDTO> returnAllPurchaseOptionsCarWithWantPayInMonth(Double costCar, Double deposit, Integer calculateDepositPercent, Double wantPayInMonth, String nameAutoDealer, String nameBank) {
+        List<CreditSetting> foundAllVersionsWhizSpecificsPercentDeposit = creditSettingRepository.findAllByPercentDepositAndCarDealer_NameCarDealerAndBank_NameBank(calculateDepositPercent,nameAutoDealer,nameBank);
+        ArrayList<CreditSettingDTO> transformationToObjArrayList = new ArrayList<>();
+        System.out.println(wantPayInMonth+ "want pay in month");
         for (CreditSetting t : foundAllVersionsWhizSpecificsPercentDeposit) {
             double costCarAfterPayDeposit = calculateCostCarAfterPayDeposit(costCar, deposit);
             double monthlyPayment = calculateMonthlyPayment(t, costCarAfterPayDeposit);
+            System.out.println("cost car "+costCarAfterPayDeposit+"  month pay "+ monthlyPayment+ " returnAll");
             if (wantPayInMonth >= monthlyPayment) {
+                System.out.println("come to ");
                 System.out.println(t.toString());
                 CreditSettingDTO creditSettingDTO = new CreditSettingDTO().convertCreditSettingToDTO(t);
                 creditSettingDTO.setMonthlyPayment(monthlyPayment);
-                System.out.println(creditSettingDTO.toString() + "//////////");
-                transformationToObjArrayList.add(creditSettingDTO.toString());
+                transformationToObjArrayList.add(creditSettingDTO);
             }
         }
+
         return transformationToObjArrayList;
     }
 //    end:   /buyCar
 
 
-
-//    start:    /morePayInMonth
+    //    start:    /morePayInMonth
 //    все варианты машины с возможными кредитами
-    public ArrayList<String> allOptionsWithThisCar(Double costCar, Double deposit) {
+    public ArrayList<CreditSettingDTO> allOptionsWithThisCar(Double costCar, Double deposit) {
         Integer calculateDepositPercent = (int) (deposit / (costCar / 100));
         calculateDepositPercent = foundPercentDepositFromCostCar(calculateDepositPercent);
-        System.out.println("car " + calculateDepositPercent);
-        ArrayList<String> transformationToObjArrayList = returnAllPurchaseOptionsCar(costCar, deposit, calculateDepositPercent);
-        for (String s : transformationToObjArrayList) {
-            System.out.println(s);
-        }
+        ArrayList<CreditSettingDTO> transformationToObjArrayList = returnAllPurchaseOptionsCar(costCar, deposit, calculateDepositPercent);
         return transformationToObjArrayList;
     }
 
     //    все варианты покупки машины в кредит
-    private ArrayList<String> returnAllPurchaseOptionsCar(Double costCar, Double deposit, Integer calculateDepositPercent) {
+    private ArrayList<CreditSettingDTO> returnAllPurchaseOptionsCar(Double costCar, Double deposit, Integer calculateDepositPercent) {
         List<CreditSetting> foundAllVersionsWhizSpecificsPercentDeposit = creditSettingRepository.findAllByPercentDeposit(calculateDepositPercent);
-        ArrayList<String> transformationToObjArrayList = new ArrayList<>();
+        ArrayList<CreditSettingDTO> transformationToObjArrayList = new ArrayList<>();
         for (CreditSetting t : foundAllVersionsWhizSpecificsPercentDeposit) {
             double costCarAfterPayDeposit = calculateCostCarAfterPayDeposit(costCar, deposit);
             double monthlyPayment = calculateMonthlyPayment(t, costCarAfterPayDeposit);
-            System.out.println(t.toString());
             CreditSettingDTO creditSettingDTO = new CreditSettingDTO().convertCreditSettingToDTO(t);
             creditSettingDTO.setMonthlyPayment(monthlyPayment);
-            transformationToObjArrayList.add(creditSettingDTO.toString());
+            transformationToObjArrayList.add(creditSettingDTO);
         }
         return transformationToObjArrayList;
     }
@@ -108,12 +104,15 @@ public class CalculatorService {
         return calculateDepositPercent;
     }
 
-//    Расчитать месячный платеж
+    //    Расчитать месячный платеж
     private static double calculateMonthlyPayment(CreditSetting t, double costCarAfterPayDeposit) {
+        System.out.println(costCarAfterPayDeposit / t.getPercent()+"  costCarAfterPayDeposit / t.getPercent()");
+        System.out.println(costCarAfterPayDeposit+" cost car after");
+        System.out.println((costCarAfterPayDeposit + (costCarAfterPayDeposit / t.getPercent())) / t.getMonth()+" calcul");
         return (costCarAfterPayDeposit + (costCarAfterPayDeposit / t.getPercent())) / t.getMonth();
     }
 
-//    расчитать оставшуюся стоимость машины после вычета депозита
+    //    расчитать оставшуюся стоимость машины после вычета депозита
     private static double calculateCostCarAfterPayDeposit(Double costCar, Double deposit) {
         return costCar - deposit;
     }

@@ -17,7 +17,6 @@ public class CreditSettingDTO {
     }
 
     public CreditSettingDTO convertCreditSettingToDTO(CreditSetting creditSetting){
-        System.out.println("come to convert");
         CreditSettingDTO creditSettingDTO = new CreditSettingDTO();
         creditSettingDTO.setCountMonthInYear(creditSetting.getMonth());
         creditSettingDTO.setPercentDeposit(creditSetting.getPercentDeposit());
