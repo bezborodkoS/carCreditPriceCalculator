@@ -5,6 +5,8 @@ import com.example.carcreditpricecalculator.repository.BankRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 public class BankService {
     private final BankRepository bankRepository;
@@ -22,5 +24,15 @@ public class BankService {
             return true;
         }
         return false;
+    }
+
+    public ArrayList<String> allBank(){
+        System.out.println("come to allBank");
+        ArrayList<String> bank = new ArrayList<>();
+        for (Bank s : bankRepository.findAll()) {
+            bank.add(s.getNameBank());
+            System.out.println(s.getNameBank());
+        }
+        return bank;
     }
 }

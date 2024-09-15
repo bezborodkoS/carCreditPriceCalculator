@@ -1,14 +1,18 @@
 package com.example.carcreditpricecalculator.controller;
 
+import com.example.carcreditpricecalculator.model.Bank;
 import com.example.carcreditpricecalculator.service.admin.BankService;
 import com.example.carcreditpricecalculator.service.admin.CarDealerService;
 import com.example.carcreditpricecalculator.service.admin.CreditSettingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.ArrayList;
 
 @Controller
 @RequestMapping("/api/admin")
@@ -21,6 +25,11 @@ public class AdminController {
         this.bankService = bankService;
         this.carDealerService = carDealerService;
         this.creditSettingService = creditSettingService;
+    }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<ArrayList<String>>getBank(){
+        return new ResponseEntity<>(bankService.allBank(),HttpStatus.OK);
     }
 
     @PostMapping("/addSetting")
