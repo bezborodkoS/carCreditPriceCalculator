@@ -57,7 +57,7 @@ public class CalculatorService {
 
     //    все варианты покупки машины в кредит
     private ArrayList<CreditSettingDTO> returnAllPurchaseOptionsCar(Double costCar, Double deposit, Integer calculateDepositPercent,String nameAutoDealer) {
-        List<CreditSetting> foundAllVersionsWhizSpecificsPercentDeposit = creditSettingRepository.findAllByPercentDepositAAndCarDealer_NameCarDealer(calculateDepositPercent,nameAutoDealer);
+        List<CreditSetting> foundAllVersionsWhizSpecificsPercentDeposit = creditSettingRepository.findAllByPercentDepositAndCarDealer_NameCarDealer(calculateDepositPercent,nameAutoDealer);
         ArrayList<CreditSettingDTO> transformationToObjArrayList = new ArrayList<>();
         for (CreditSetting t : foundAllVersionsWhizSpecificsPercentDeposit) {
             double costCarAfterPayDeposit = calculateCostCarAfterPayDeposit(costCar, deposit);
